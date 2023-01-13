@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ae147bac9ff8453284f59548528c2aa, type: 3}
-  m_Name: ARCoreExtensionsConfig
+  m_Name: GeospatialConfig
   m_EditorClassIdentifier: 
-  CloudAnchorMode: 1
+  CloudAnchorMode: 0
   GeospatialMode: 0
