@@ -75,6 +75,11 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         public GameObject ResolveMenu;
 
         /// <summary>
+        /// The resolve screen that provides the options to pair hosted Cloud Anchors.
+        /// </summary>
+        public GameObject PairMenu;
+
+        /// <summary>
         /// The information screen that displays useful information about privacy prompt.
         /// </summary>
         public GameObject PrivacyPrompt;
@@ -155,6 +160,15 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         }
 
         /// <summary>
+        /// Callback handling "Pair Waypoints" button click event in Home Page.
+        /// </summary>
+        public void OnPairButtonClicked()
+        {
+            Mode = ApplicationMode.Ready;
+            SwitchToPairMenu();
+        }
+
+        /// <summary>
         /// Callback handling "Begin to resolve" button click event in Home Page.
         /// </summary>
         public void OnResolveButtonClicked()
@@ -205,6 +219,15 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
 
             ResetAllViews();
             PrivacyPrompt.SetActive(true);
+        }
+
+        /// <summary>
+        /// Switch to privacy prompt, and disable all other screens.
+        /// </summary>
+        public void SwitchToPairMenu()
+        {
+            ResetAllViews();
+            PairMenu.SetActive(true);
         }
 
         /// <summary>
