@@ -10,6 +10,7 @@
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 /[Kk]eystore/
+/[Dd]data/google-services.json
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
@@ -58,3 +59,10 @@ sysinfo.txt
 
 # Crashlytics generated file
 crashlytics-build.properties
+
+#Large files
+Assets/Firebase/Plugins/x86_64/FirebaseCppApp-10_5_0.so
+Assets/Firebase/
+Assets/Plugins/iOS/
+Assets/Plugins/tvOS/
+data/google-services.json
