@@ -334,6 +334,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             ARView.SetActive(false);
             PrivacyPrompt.SetActive(false);
             ResolveMenu.SetActive(false);
+            PairMenu.SetActive(false);
             HomePage.SetActive(false);
         }
 
