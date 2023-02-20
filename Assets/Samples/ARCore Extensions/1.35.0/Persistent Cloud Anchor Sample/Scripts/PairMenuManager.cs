@@ -103,7 +103,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                 //}
 
                 // Update resolve button.
-                SetButtonActive(PairButton, Controller.ResolvingSet.Count > 0);
+                SetButtonActive(PairButton, true);
             }
 
             // Add Cloud Anchor Ids from input field.
