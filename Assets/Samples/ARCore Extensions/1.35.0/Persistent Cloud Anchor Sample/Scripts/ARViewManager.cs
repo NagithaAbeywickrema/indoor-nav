@@ -70,6 +70,8 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// </summary>
         public InputField NameField;
 
+        public MultiselectionDropdown Multiselection;
+
         /// <summary>
         /// The instruction text in the top instruction bar.
         /// </summary>
@@ -189,6 +191,9 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         private Color _activeColor;
         private AndroidJavaClass _versionInfo;
 
+        private string[] anchorTypes = new string[2];
+        private string lastHostedAnchorId;
+
         /// <summary>
         /// Get the camera pose for the current frame.
         /// </summary>
@@ -217,7 +222,12 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         public void OnSaveButtonClicked()
         {
             _hostedCloudAnchor.Name = NameField.text;
+            List<int> selectedIndex = Multiselection.SelectedValues;
+            string anchor_type = anchorTypes[selectedIndex[0]];
+            string anchor_id = lastHostedAnchorId;
             Controller.SaveCloudAnchorHistory(_hostedCloudAnchor);
+
+            //TODO: save to firebase
 
             DebugText.text = string.Format("Saved Cloud Anchor:\n{0}.", _hostedCloudAnchor.Name);
             ShareButton.gameObject.SetActive(true);
@@ -271,6 +281,13 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                     DebugText.text = "ARCore is preparing for " + Controller.Mode;
                     break;
             }
+
+            var options = new List<MultiselectionDropdown.OptionData>();
+            options.Add(new MultiselectionDropdown.OptionData("waypoint", ""));
+            options.Add(new MultiselectionDropdown.OptionData("destination", ""));
+            anchorTypes[0] = "waypoint";
+            anchorTypes[1] = "destination";
+            Multiselection.Options = options;
         }
 
         /// <summary>
@@ -597,6 +614,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                     string.Format("Succeed to host the Cloud Anchor: {0}.", response);
 
                 // Display name panel and hide instruction bar.
+                lastHostedAnchorId = response;
                 NameField.text = _hostedCloudAnchor.Name;
                 NamePanel.SetActive(true);
                 SetSaveButtonActive(true);
