@@ -31,10 +31,14 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
     /// </summary>
     public class ResolveMenuManager : MonoBehaviour
     {
+        public Text DebugText;
+
         /// <summary>
         /// The main controller for Persistent Cloud Anchors sample.
         /// </summary>
         public PersistentCloudAnchorsController Controller;
+
+        public WaypointManager WaypointManager;
 
         /// <summary>
         /// A multiselection dropdown component that contains all available resolving options.
@@ -101,16 +105,17 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// </summary>
         public void OnResolvingSelectionChanged()
         {
-            Controller.ResolvingSet.Clear();
+            //Controller.ResolvingSet.Clear();
 
             // Add Cloud Anchor Ids from multiselection dropdown.
             List<int> selectedIndex = Multiselection.SelectedValues;
             if (selectedIndex.Count > 0)
             {
-                foreach (int index in selectedIndex)
-                {
-                    Controller.ResolvingSet.Add(_history.Collection[index].Id);
-                }
+                //foreach (int index in selectedIndex)
+                //{
+                //    Controller.ResolvingSet.Add(_history.Collection[index].Id);
+                //}
+                WaypointManager.destination = WaypointManager.waypoints[selectedIndex[0]];
             }
 
             // Add Cloud Anchor Ids from input field.
@@ -124,7 +129,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             }
 
             // Update resolve button.
-            SetButtonActive(ResolveButton, Controller.ResolvingSet.Count > 0);
+            SetButtonActive(ResolveButton, WaypointManager.destination != null);
         }
 
         /// <summary>
@@ -140,17 +145,37 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// </summary>
         public void OnEnable()
         {
+            string txt = "hey\n";
             SetButtonActive(ResolveButton, false);
+            WaypointManager.gameObject.SetActive(false);
             InvalidInputWarning.SetActive(false);
             InputField.text = string.Empty;
-            _history = Controller.LoadCloudAnchorHistory();
+            //_history = Controller.LoadCloudAnchorHistory();
+            WaypointManager.MakeGraph();
+            foreach(Waypoint point in WaypointManager.waypoints)
+            {
+                Controller.ResolvingSet.Add(point.id);
+                txt += point.name + ", " + point.type + ", " + point.id + "\n";
+            }
+            txt += "\n";
+            List<Waypoint> destinations = WaypointManager.GetDestinations();
+            foreach (Waypoint point in destinations)
+            {
+                txt += point.name + ", " + point.type + ", " + point.id + "\n";
+            }
+            DebugText.text = txt;
 
             Multiselection.OnValueChanged += OnResolvingSelectionChanged;
             var options = new List<MultiselectionDropdown.OptionData>();
-            foreach (var data in _history.Collection)
+            //foreach (var data in _history.Collection)
+            //{
+            //    options.Add(new MultiselectionDropdown.OptionData(
+            //        data.Name, FormatDateTime(data.CreatedTime)));
+            //}
+            foreach (var data in destinations)
             {
                 options.Add(new MultiselectionDropdown.OptionData(
-                    data.Name, FormatDateTime(data.CreatedTime)));
+                    data.name, ""));
             }
 
             Multiselection.Options = options;

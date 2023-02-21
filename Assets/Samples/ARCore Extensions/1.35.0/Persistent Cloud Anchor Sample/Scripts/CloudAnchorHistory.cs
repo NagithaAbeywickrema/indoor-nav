@@ -45,16 +45,19 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// </summary>
         public string SerializedTime;
 
+        public string Type;
+
         /// <summary>
         /// Construct a Cloud Anchor history.
         /// </summary>
         /// <param name="name">An informative name given by the user.</param>
         /// <param name="id">The Cloud Anchor Id which is used for resolving.</param>
         /// <param name="time">The time this Cloud Anchor was created.</param>
-        public CloudAnchorHistory(string name, string id, DateTime time)
+        public CloudAnchorHistory(string name, string id, string type, DateTime time)
         {
             Name = name;
             Id = id;
+            Type = type;
             SerializedTime = time.ToString();
         }
 
@@ -63,7 +66,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// </summary>
         /// <param name="name">An informative name given by the user.</param>
         /// <param name="id">The Cloud Anchor Id which is used for resolving.</param>
-        public CloudAnchorHistory(string name, string id) : this(name, id, DateTime.Now)
+        public CloudAnchorHistory(string name, string id, string type) : this(name, id, type, DateTime.Now)
         {
         }
 
@@ -98,5 +101,29 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// A list of Cloud Anchor History Data.
         /// </summary>
         public List<CloudAnchorHistory> Collection = new List<CloudAnchorHistory>();
+    }
+
+    [Serializable]
+    public struct PairHistory
+    {
+        public string Id1;
+        public string Id2;
+
+        public PairHistory(string id1, string id2)
+        {
+            Id1 = id1;
+            Id2 = id2;
+        }
+
+        public override string ToString()
+        {
+            return JsonUtility.ToJson(this);
+        }
+    }
+
+    [Serializable]
+    public class PairHistoryCollection
+    {
+        public List<PairHistory> Collection = new List<PairHistory>();
     }
 }

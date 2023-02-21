@@ -122,8 +122,9 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
 
         public void OnPairButtonClicked()
         {
-            //TODO: send data to firebase
-
+            //TODO: send data to firebase instead
+            PairHistory pair_history = new PairHistory(pair[0], pair[1]);
+            Controller.SavePairHistory(pair_history);
             Controller.SwitchToHomePage();
         }
 
@@ -144,6 +145,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             InvalidInputWarning.SetActive(false);
             InputField.text = string.Empty;
             _history = Controller.LoadCloudAnchorHistory();
+            //TODO: load from firebase instead
 
             Multiselection.OnValueChanged += OnResolvingSelectionChanged;
             MultiselectionNext.OnValueChanged += OnResolvingSelectionChanged;
@@ -151,7 +153,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             foreach (var data in _history.Collection)
             {
                 options.Add(new MultiselectionDropdown.OptionData(
-                    data.Name, FormatDateTime(data.CreatedTime)));
+                    data.Name, data.Type));
             }
 
             Multiselection.Options = options;

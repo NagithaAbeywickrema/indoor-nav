@@ -113,6 +113,8 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// </summary>
         private const string _persistentCloudAnchorsStorageKey = "PersistentCloudAnchors";
 
+        private const string _pairsStorageKey = "Pairs";
+
         /// <summary>
         /// The limitation of how many Cloud Anchors can be stored in local storage.
         /// </summary>
@@ -186,6 +188,11 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                 "https://developers.google.com/ar/data-privacy");
         }
 
+        public void OnClearButtonClicked()
+        {
+            PlayerPrefs.DeleteAll();
+        }
+
         /// <summary>
         /// Switch to home page, and disable all other screens.
         /// </summary>
@@ -239,6 +246,40 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             PlayerPrefs.SetInt(_hasDisplayedStartInfoKey, 1);
             ARView.SetActive(true);
             SetPlatformActive(true);
+        }
+
+        public PairHistoryCollection LoadPairHistory()
+        {
+            if (PlayerPrefs.HasKey(_pairsStorageKey))
+            {
+                var history = JsonUtility.FromJson<PairHistoryCollection>(
+                    PlayerPrefs.GetString(_pairsStorageKey));
+
+
+                return history;
+            }
+
+            return new PairHistoryCollection();
+        }
+
+
+        public void SavePairHistory(PairHistory data)
+        {
+            var history = LoadPairHistory();
+
+            // Sort the data from latest record to oldest record which affects the option order in
+            // multiselection dropdown.
+            history.Collection.Add(data);
+            //history.Collection.Sort((left, right) => right.CreatedTime.CompareTo(left.CreatedTime));
+
+            // Remove the oldest data if the capacity exceeds storage limit.
+            if (history.Collection.Count > _storageLimit)
+            {
+                history.Collection.RemoveRange(
+                    _storageLimit, history.Collection.Count - _storageLimit);
+            }
+
+            PlayerPrefs.SetString(_pairsStorageKey, JsonUtility.ToJson(history));
         }
 
         /// <summary>
