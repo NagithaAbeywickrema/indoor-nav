@@ -29,12 +29,14 @@ public class FirebaseManager : MonoBehaviour
             {
                 // Create and hold a reference to your FirebaseApp,
                 // where app is a Firebase.FirebaseApp property of your application class.
-                app = Firebase.FirebaseApp.DefaultInstance;
+                this.app = Firebase.FirebaseApp.DefaultInstance;
                 InitializeFirebase();
                 // Set a flag here to indicate whether Firebase is ready to use by your app.
             }
             else
             {
+                Debug.Log("Error");
+                Debug.Log(dependencyStatus);
                 UnityEngine.Debug.Log(System.String.Format(
                   "Could not resolve all Firebase dependencies: {0}", dependencyStatus));
                 // Firebase Unity SDK is not safe to use here.
@@ -47,26 +49,26 @@ public class FirebaseManager : MonoBehaviour
 
     void InitializeFirebase()
     {
-        auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
-        auth.StateChanged += AuthStateChanged;
+        this.auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
+        this.auth.StateChanged += AuthStateChanged;
         AuthStateChanged(this, null);
     }
 
     void AuthStateChanged(object sender, System.EventArgs eventArgs)
     {
-        if (auth.CurrentUser != user)
+        if (this.auth.CurrentUser != this.user)
         {
-            bool signedIn = user != auth.CurrentUser && auth.CurrentUser != null;
-            if (!signedIn && user != null)
+            bool signedIn = this.user != this.auth.CurrentUser && this.auth.CurrentUser != null;
+            if (!signedIn && this.user != null)
             {
                 Debug.Log("Signed out " + user.UserId);
             }
-            user = auth.CurrentUser;
+            this.user = this.auth.CurrentUser;
             if (signedIn)
             {
                 Debug.Log("Signed in " + user.UserId);
-                displayName = user.DisplayName ?? "";
-                emailAddress = user.Email ?? "";
+                this.displayName = this.user.DisplayName ?? "";
+                this.emailAddress = this.user.Email ?? "";
             }
         }
     }
@@ -85,8 +87,7 @@ public class FirebaseManager : MonoBehaviour
         string em = "pasinduyeshann@gmail.com";
         string ps = "password";
 
-        auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
-        auth.CreateUserWithEmailAndPasswordAsync(em, ps).ContinueWith(task => {
+        this.auth.CreateUserWithEmailAndPasswordAsync(em, ps).ContinueWith(task => {
             if (task.IsCanceled)
             {
                 Debug.Log("CreateUserWithEmailAndPasswordAsync was canceled.");
@@ -114,8 +115,7 @@ public class FirebaseManager : MonoBehaviour
         string em = "pasinduyeshann@gmail.com";
         string ps = "password";
 
-        auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
-        auth.SignInWithEmailAndPasswordAsync(em, ps).ContinueWith(task => {
+        this.auth.SignInWithEmailAndPasswordAsync(em, ps).ContinueWith(task => {
             if (task.IsCanceled)
             {
                 Debug.Log("SignInWithEmailAndPasswordAsync was canceled.");
@@ -128,7 +128,7 @@ public class FirebaseManager : MonoBehaviour
             }
 
             Firebase.Auth.FirebaseUser newUser = task.Result;
-             user = newUser;
+             this.user = newUser;
             Debug.LogFormat("User signed in successfully: {0} ({1})",
                 newUser.DisplayName, newUser.UserId);
         });
