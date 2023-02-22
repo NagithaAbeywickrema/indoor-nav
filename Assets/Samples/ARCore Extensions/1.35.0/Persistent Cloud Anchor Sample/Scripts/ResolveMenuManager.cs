@@ -145,14 +145,14 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// </summary>
         public void OnEnable()
         {
-            string txt = "hey\n";
+            string txt = "";
             SetButtonActive(ResolveButton, false);
             WaypointManager.gameObject.SetActive(false);
             InvalidInputWarning.SetActive(false);
             InputField.text = string.Empty;
             //_history = Controller.LoadCloudAnchorHistory();
             WaypointManager.MakeGraph();
-            foreach(Waypoint point in WaypointManager.waypoints)
+            foreach (Waypoint point in WaypointManager.waypoints)
             {
                 Controller.ResolvingSet.Add(point.id);
                 txt += point.name + ", " + point.type + ", " + point.id + "\n";

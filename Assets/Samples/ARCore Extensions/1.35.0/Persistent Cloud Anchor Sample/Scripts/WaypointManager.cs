@@ -4,15 +4,18 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
+    using UnityEngine.UI;
 
     public class WaypointManager : MonoBehaviour
     {
+        public Text DebugText;
+
         public PersistentCloudAnchorsController Controller;
         public GameObject ArrowPrefab;
         public Transform cameraTransform;
-        public List<Vertice> vertices;
-        public List<Waypoint> waypoints;
-        public List<Waypoint> path;
+        public List<Vertice> vertices = new List<Vertice>();
+        public List<Waypoint> waypoints = new List<Waypoint>();
+        public List<Waypoint> path = new List<Waypoint>();
         public Waypoint destination;
 
         private Waypoint _current;
@@ -101,14 +104,14 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                 if (current == destination)
                 {
                     // Build the path
-                    List<Waypoint> path = new List<Waypoint>();
+                    List<Waypoint> path1 = new List<Waypoint>();
                     while (current != null)
                     {
-                        path.Add(current);
+                        path1.Add(current);
                         current = previous[current];
                     }
-                    path.Reverse();
-                    return path;
+                    path1.Reverse();
+                    return path1;
                 }
 
                 foreach (Waypoint next in current.adjacent)
@@ -130,14 +133,17 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             CloudAnchorHistoryCollection cloud_anchors_history = Controller.LoadCloudAnchorHistory();
             PairHistoryCollection pairs_history = Controller.LoadPairHistory();
 
+            waypoints = new List<Waypoint>();
             foreach (var data in cloud_anchors_history.Collection)
             {
                 waypoints.Add(new Waypoint(data.Id, data.Name, data.Type));
             }
 
+            vertices = new List<Vertice>();
             foreach (var data in pairs_history.Collection)
             {
-                vertices.Add(new Vertice(data.Id1, data.Id2));
+                Vertice vert = new Vertice(data.Id1, data.Id2);
+                this.vertices.Add(vert);
             }
 
             //TODO: make graph

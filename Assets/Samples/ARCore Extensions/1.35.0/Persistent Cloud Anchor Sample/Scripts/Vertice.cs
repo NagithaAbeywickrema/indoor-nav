@@ -6,7 +6,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
 
     public class Vertice
     {
-        public List<string> nodes;
+        public List<string> nodes = new List<string>();
 
         public Vertice(string node1, string node2)
         {
