@@ -44,9 +44,6 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                     // Firebase Unity SDK is not safe to use here.
                 }
             });
-
-
-
         }
 
         void InitializeFirebase()
@@ -77,20 +74,10 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             }
         }
 
-        // void OnDestroy()
-        // {
-        //     auth.StateChanged -= AuthStateChanged;
-        //     auth = null;
-        // }
-
         public void OnClickSignup()
         {
-            Debug.Log("Clicked signup");
-            // string em = email.text;
-            // string ps = password.text;
-
-            string em = "pasinduyeshann@gmail.com";
-            string ps = "password";
+            string em = email.text;
+            string ps = password.text;
 
             this.auth.CreateUserWithEmailAndPasswordAsync(em, ps).ContinueWith(task =>
             {
@@ -114,7 +101,6 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
 
         public void OnClickSignin()
         {
-            Debug.Log("Clicked signin");
             string em = email.text;
             string ps = password.text;
 
