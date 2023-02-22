@@ -39,10 +39,14 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// </summary>
         public PersistentCloudAnchorsController Controller;
 
+        public WaypointManager WaypointManager;
+
         /// <summary>
         /// The 3D object that represents a Cloud Anchor.
         /// </summary>
         public GameObject CloudAnchorPrefab;
+
+        public GameObject CloudAnchorPrefabRes;
 
         /// <summary>
         /// The game object that includes <see cref="MapQualityIndicator"/> to visualize
@@ -69,6 +73,8 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// The input field for naming Cloud Anchor.
         /// </summary>
         public InputField NameField;
+
+        public MultiselectionDropdown Multiselection;
 
         /// <summary>
         /// The instruction text in the top instruction bar.
@@ -189,6 +195,9 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         private Color _activeColor;
         private AndroidJavaClass _versionInfo;
 
+        private string[] anchorTypes = new string[2];
+        private string lastHostedAnchorId;
+
         /// <summary>
         /// Get the camera pose for the current frame.
         /// </summary>
@@ -217,6 +226,10 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         public void OnSaveButtonClicked()
         {
             _hostedCloudAnchor.Name = NameField.text;
+            List<int> selectedIndex = Multiselection.SelectedValues;
+            string anchor_type = anchorTypes[selectedIndex[0]];
+            string anchor_id = lastHostedAnchorId;
+            _hostedCloudAnchor.Type = anchor_type;
             Controller.SaveCloudAnchorHistory(_hostedCloudAnchor);
 
             DebugText.text = string.Format("Saved Cloud Anchor:\n{0}.", _hostedCloudAnchor.Name);
@@ -269,8 +282,16 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                 case PersistentCloudAnchorsController.ApplicationMode.Resolving:
                     InstructionText.text = "Detecting flat surface...";
                     DebugText.text = "ARCore is preparing for " + Controller.Mode;
+                    WaypointManager.gameObject.SetActive(true);
                     break;
             }
+
+            var options = new List<MultiselectionDropdown.OptionData>();
+            options.Add(new MultiselectionDropdown.OptionData("waypoint", ""));
+            options.Add(new MultiselectionDropdown.OptionData("destination", ""));
+            anchorTypes[0] = "waypoint";
+            anchorTypes[1] = "destination";
+            Multiselection.Options = options;
         }
 
         /// <summary>
@@ -278,6 +299,8 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// </summary>
         public void OnDisable()
         {
+
+            WaypointManager.gameObject.SetActive(false);
             if (_qualityIndicator != null)
             {
                 Destroy(_qualityIndicator.gameObject);
@@ -548,7 +571,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                             cloudAnchor.cloudAnchorId);
                         int count = Controller.LoadCloudAnchorHistory().Collection.Count;
                         _hostedCloudAnchor = new CloudAnchorHistory("CloudAnchor" + count,
-                            cloudAnchor.cloudAnchorId);
+                            cloudAnchor.cloudAnchorId, ""); //NOTE: empty string passed
                         OnAnchorHostedFinished(true, cloudAnchor.cloudAnchorId);
                     }
                     else if (Controller.Mode ==
@@ -557,7 +580,8 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                         Debug.LogFormat("Succeed to resolve the Cloud Anchor: {0}",
                             cloudAnchor.cloudAnchorId);
                         OnAnchorResolvedFinished(true, cloudAnchor.cloudAnchorId);
-                        Instantiate(CloudAnchorPrefab, cloudAnchor.transform);
+                        GameObject anchor_obj = Instantiate(CloudAnchorPrefabRes, cloudAnchor.transform);
+                        WaypointManager.SetAnchorObject(cloudAnchor.cloudAnchorId, anchor_obj);
                     }
 
                     _cachedCloudAnchors.Add(cloudAnchor);
@@ -597,6 +621,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                     string.Format("Succeed to host the Cloud Anchor: {0}.", response);
 
                 // Display name panel and hide instruction bar.
+                lastHostedAnchorId = response;
                 NameField.text = _hostedCloudAnchor.Name;
                 NamePanel.SetActive(true);
                 SetSaveButtonActive(true);

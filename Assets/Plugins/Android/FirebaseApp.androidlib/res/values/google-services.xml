@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/gcm_defaultSenderId,@string/google_storage_bucket,@string/project_id,@string/google_api_key,@string/google_crash_reporting_api_key,@string/google_app_id,@string/default_android_client_id,@string/default_web_client_id">
+  <string name="gcm_defaultSenderId" translatable="false">832709448585</string>
+  <string name="google_storage_bucket" translatable="false">indoor-nav-939e7.appspot.com</string>
+  <string name="project_id" translatable="false">indoor-nav-939e7</string>
+  <string name="google_api_key" translatable="false">AIzaSyCqd2Cbjzo0bIt4r55_8QpYNcdGnfABFG0</string>
+  <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCqd2Cbjzo0bIt4r55_8QpYNcdGnfABFG0</string>
+  <string name="google_app_id" translatable="false">1:832709448585:android:96be52b1bb173a83570758</string>
+  <string name="default_android_client_id" translatable="false">832709448585-rcg39hsrdvhnl371dh49jn1jaik3g3nj.apps.googleusercontent.com</string>
+  <string name="default_web_client_id" translatable="false">832709448585-pfp9rmtk2ot0cm4cq0gqi1dr7du7r4o8.apps.googleusercontent.com</string>
+</resources>

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "832709448585",
+    "project_id": "indoor-nav-939e7",
+    "storage_bucket": "indoor-nav-939e7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:832709448585:android:96be52b1bb173a83570758",
+        "android_client_info": {
+          "package_name": "com.axios.indoorNav"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "832709448585-rcg39hsrdvhnl371dh49jn1jaik3g3nj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.axios.indoorNav",
+            "certificate_hash": "f37a0ff339daeb3fa8f4572465dfe439b7e45b14"
+          }
+        },
+        {
+          "client_id": "832709448585-pfp9rmtk2ot0cm4cq0gqi1dr7du7r4o8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqd2Cbjzo0bIt4r55_8QpYNcdGnfABFG0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "832709448585-pfp9rmtk2ot0cm4cq0gqi1dr7du7r4o8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

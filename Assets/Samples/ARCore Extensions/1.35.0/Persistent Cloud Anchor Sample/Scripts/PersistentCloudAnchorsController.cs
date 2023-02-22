@@ -23,6 +23,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
     using System;
     using System.Collections.Generic;
     using UnityEngine;
+    using UnityEngine.UI;
     using UnityEngine.XR.ARFoundation;
 
     /// <summary>
@@ -62,6 +63,8 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// </summary>
         public ARRaycastManager RaycastManager;
 
+        public FirebaseManager FirebaseManager;
+
         [Header("UI")]
 
         /// <summary>
@@ -69,10 +72,19 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// </summary>
         public GameObject HomePage;
 
+        public string userType;
+
         /// <summary>
         /// The resolve screen that provides the options on which Cloud Anchors to be resolved.
         /// </summary>
         public GameObject ResolveMenu;
+
+        /// <summary>
+        /// The resolve screen that provides the options to pair hosted Cloud Anchors.
+        /// </summary>
+        public GameObject PairMenu;
+
+        public GameObject LoginMenu;
 
         /// <summary>
         /// The information screen that displays useful information about privacy prompt.
@@ -84,6 +96,9 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// and returns to home page.
         /// </summary>
         public GameObject ARView;
+
+        public Button HostButton;
+        public Button PairButton;
 
         /// <summary>
         /// The current application mode.
@@ -108,10 +123,14 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// </summary>
         private const string _persistentCloudAnchorsStorageKey = "PersistentCloudAnchors";
 
+        private const string _pairsStorageKey = "Pairs";
+
         /// <summary>
         /// The limitation of how many Cloud Anchors can be stored in local storage.
         /// </summary>
         private const int _storageLimit = 40;
+
+        private Color _activeColor;
 
         /// <summary>
         /// Sample application modes.
@@ -155,6 +174,15 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         }
 
         /// <summary>
+        /// Callback handling "Pair Waypoints" button click event in Home Page.
+        /// </summary>
+        public void OnPairButtonClicked()
+        {
+            Mode = ApplicationMode.Ready;
+            SwitchToPairMenu();
+        }
+
+        /// <summary>
         /// Callback handling "Begin to resolve" button click event in Home Page.
         /// </summary>
         public void OnResolveButtonClicked()
@@ -172,15 +200,48 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                 "https://developers.google.com/ar/data-privacy");
         }
 
+        public void OnClearButtonClicked()
+        {
+            PlayerPrefs.DeleteAll();
+        }
+
+        public void OnSignoutButtonClicked()
+        {
+            FirebaseManager.SignOut();
+            SwitchToLoginPage();
+        }
+
         /// <summary>
         /// Switch to home page, and disable all other screens.
         /// </summary>
         public void SwitchToHomePage()
         {
+            if (FirebaseManager.user == null)
+            {
+                HostButton.GetComponent<Image>().color = false ? _activeColor : Color.grey;
+                PairButton.GetComponent<Image>().color = false ? _activeColor : Color.grey;
+                HostButton.enabled = false;
+                PairButton.enabled = false;
+            }
+            else
+            {
+                HostButton.GetComponent<Image>().color = true ? _activeColor : Color.grey;
+                PairButton.GetComponent<Image>().color = true ? _activeColor : Color.grey;
+                HostButton.enabled = true;
+                PairButton.enabled = true;
+            }
             ResetAllViews();
             Mode = ApplicationMode.Ready;
             ResolvingSet.Clear();
             HomePage.SetActive(true);
+        }
+
+        public void SwitchToLoginPage()
+        {
+            ResetAllViews();
+            Mode = ApplicationMode.Ready;
+            ResolvingSet.Clear();
+            LoginMenu.SetActive(true);
         }
 
         /// <summary>
@@ -208,6 +269,15 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         }
 
         /// <summary>
+        /// Switch to privacy prompt, and disable all other screens.
+        /// </summary>
+        public void SwitchToPairMenu()
+        {
+            ResetAllViews();
+            PairMenu.SetActive(true);
+        }
+
+        /// <summary>
         /// Switch to AR view, and disable all other screens.
         /// </summary>
         public void SwitchToARView()
@@ -216,6 +286,40 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             PlayerPrefs.SetInt(_hasDisplayedStartInfoKey, 1);
             ARView.SetActive(true);
             SetPlatformActive(true);
+        }
+
+        public PairHistoryCollection LoadPairHistory()
+        {
+            if (PlayerPrefs.HasKey(_pairsStorageKey))
+            {
+                var history = JsonUtility.FromJson<PairHistoryCollection>(
+                    PlayerPrefs.GetString(_pairsStorageKey));
+
+
+                return history;
+            }
+
+            return new PairHistoryCollection();
+        }
+
+
+        public void SavePairHistory(PairHistory data)
+        {
+            var history = LoadPairHistory();
+
+            // Sort the data from latest record to oldest record which affects the option order in
+            // multiselection dropdown.
+            history.Collection.Add(data);
+            //history.Collection.Sort((left, right) => right.CreatedTime.CompareTo(left.CreatedTime));
+
+            // Remove the oldest data if the capacity exceeds storage limit.
+            if (history.Collection.Count > _storageLimit)
+            {
+                history.Collection.RemoveRange(
+                    _storageLimit, history.Collection.Count - _storageLimit);
+            }
+
+            PlayerPrefs.SetString(_pairsStorageKey, JsonUtility.ToJson(history));
         }
 
         /// <summary>
@@ -277,11 +381,21 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             Screen.autorotateToPortraitUpsideDown = false;
             Screen.orientation = ScreenOrientation.Portrait;
 
+            _activeColor = PairButton.GetComponent<Image>().color;
+
             // Enable Persistent Cloud Anchors sample to target 60fps camera capture frame rate
             // on supported devices.
             // Note, Application.targetFrameRate is ignored when QualitySettings.vSyncCount != 0.
             Application.targetFrameRate = 60;
-            SwitchToHomePage();
+            if(FirebaseManager.user != null)
+            {
+                SwitchToHomePage();
+            }
+            else
+            {
+                SwitchToLoginPage();
+            }
+            
         }
 
         /// <summary>
@@ -311,6 +425,8 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             ARView.SetActive(false);
             PrivacyPrompt.SetActive(false);
             ResolveMenu.SetActive(false);
+            PairMenu.SetActive(false);
+            LoginMenu.SetActive(false);
             HomePage.SetActive(false);
         }
 
