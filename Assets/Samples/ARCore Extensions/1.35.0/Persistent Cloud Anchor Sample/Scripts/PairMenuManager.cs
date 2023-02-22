@@ -97,12 +97,6 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             {
                 pair[0] = _history.Collection[selectedIndex[0]].Id;
                 pair[1] = _history.Collection[selectedIndexNext[0]].Id;
-                //foreach (int index in selectedIndex)
-                //{
-                //    Controller.ResolvingSet.Add(_history.Collection[index].Id);
-                //}
-
-                // Update resolve button.
                 SetButtonActive(PairButton, true);
             }
 
@@ -115,14 +109,10 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                     Controller.ResolvingSet.UnionWith(inputIds);
                 }
             }
-
-            //// Update resolve button.
-            //SetButtonActive(PairButton, Controller.ResolvingSet.Count > 0);
         }
 
         public void OnPairButtonClicked()
         {
-            //TODO: send data to firebase instead
             PairHistory pair_history = new PairHistory(pair[0], pair[1]);
             Controller.SavePairHistory(pair_history);
             Controller.SwitchToHomePage();
@@ -145,7 +135,6 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             InvalidInputWarning.SetActive(false);
             InputField.text = string.Empty;
             _history = Controller.LoadCloudAnchorHistory();
-            //TODO: load from firebase instead
 
             Multiselection.OnValueChanged += OnResolvingSelectionChanged;
             MultiselectionNext.OnValueChanged += OnResolvingSelectionChanged;

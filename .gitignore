@@ -58,3 +58,13 @@ sysinfo.txt
 
 # Crashlytics generated file
 crashlytics-build.properties
+
+#Large files
+Assets/Firebase/Plugins/x86_64/FirebaseCppApp-10_5_0.so
+Assets/Firebase/
+Assets/Plugins/iOS/
+Assets/Plugins/tvOS/
+data/google-services.*
+Assets/StreamingAssets/google-services.*
+Assets/google-services.*
+Assets/StreamingAssets/google-services-desktop.*

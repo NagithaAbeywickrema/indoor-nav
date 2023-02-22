@@ -46,6 +46,8 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// </summary>
         public GameObject CloudAnchorPrefab;
 
+        public GameObject CloudAnchorPrefabRes;
+
         /// <summary>
         /// The game object that includes <see cref="MapQualityIndicator"/> to visualize
         /// map quality result.
@@ -229,8 +231,6 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             string anchor_id = lastHostedAnchorId;
             _hostedCloudAnchor.Type = anchor_type;
             Controller.SaveCloudAnchorHistory(_hostedCloudAnchor);
-
-            //TODO: save to firebase
 
             DebugText.text = string.Format("Saved Cloud Anchor:\n{0}.", _hostedCloudAnchor.Name);
             ShareButton.gameObject.SetActive(true);
@@ -580,7 +580,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                         Debug.LogFormat("Succeed to resolve the Cloud Anchor: {0}",
                             cloudAnchor.cloudAnchorId);
                         OnAnchorResolvedFinished(true, cloudAnchor.cloudAnchorId);
-                        GameObject anchor_obj = Instantiate(CloudAnchorPrefab, cloudAnchor.transform);
+                        GameObject anchor_obj = Instantiate(CloudAnchorPrefabRes, cloudAnchor.transform);
                         WaypointManager.SetAnchorObject(cloudAnchor.cloudAnchorId, anchor_obj);
                     }
 

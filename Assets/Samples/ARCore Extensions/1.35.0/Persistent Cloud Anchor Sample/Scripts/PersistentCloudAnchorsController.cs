@@ -23,6 +23,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
     using System;
     using System.Collections.Generic;
     using UnityEngine;
+    using UnityEngine.UI;
     using UnityEngine.XR.ARFoundation;
 
     /// <summary>
@@ -62,12 +63,16 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// </summary>
         public ARRaycastManager RaycastManager;
 
+        public FirebaseManager FirebaseManager;
+
         [Header("UI")]
 
         /// <summary>
         /// The home page to choose entering hosting or resolving work flow.
         /// </summary>
         public GameObject HomePage;
+
+        public string userType;
 
         /// <summary>
         /// The resolve screen that provides the options on which Cloud Anchors to be resolved.
@@ -79,6 +84,8 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// </summary>
         public GameObject PairMenu;
 
+        public GameObject LoginMenu;
+
         /// <summary>
         /// The information screen that displays useful information about privacy prompt.
         /// </summary>
@@ -89,6 +96,9 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// and returns to home page.
         /// </summary>
         public GameObject ARView;
+
+        public Button HostButton;
+        public Button PairButton;
 
         /// <summary>
         /// The current application mode.
@@ -119,6 +129,8 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         /// The limitation of how many Cloud Anchors can be stored in local storage.
         /// </summary>
         private const int _storageLimit = 40;
+
+        private Color _activeColor;
 
         /// <summary>
         /// Sample application modes.
@@ -193,15 +205,43 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             PlayerPrefs.DeleteAll();
         }
 
+        public void OnSignoutButtonClicked()
+        {
+            FirebaseManager.SignOut();
+            SwitchToLoginPage();
+        }
+
         /// <summary>
         /// Switch to home page, and disable all other screens.
         /// </summary>
         public void SwitchToHomePage()
         {
+            if (FirebaseManager.user == null)
+            {
+                HostButton.GetComponent<Image>().color = false ? _activeColor : Color.grey;
+                PairButton.GetComponent<Image>().color = false ? _activeColor : Color.grey;
+                HostButton.enabled = false;
+                PairButton.enabled = false;
+            }
+            else
+            {
+                HostButton.GetComponent<Image>().color = true ? _activeColor : Color.grey;
+                PairButton.GetComponent<Image>().color = true ? _activeColor : Color.grey;
+                HostButton.enabled = true;
+                PairButton.enabled = true;
+            }
             ResetAllViews();
             Mode = ApplicationMode.Ready;
             ResolvingSet.Clear();
             HomePage.SetActive(true);
+        }
+
+        public void SwitchToLoginPage()
+        {
+            ResetAllViews();
+            Mode = ApplicationMode.Ready;
+            ResolvingSet.Clear();
+            LoginMenu.SetActive(true);
         }
 
         /// <summary>
@@ -341,11 +381,21 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             Screen.autorotateToPortraitUpsideDown = false;
             Screen.orientation = ScreenOrientation.Portrait;
 
+            _activeColor = PairButton.GetComponent<Image>().color;
+
             // Enable Persistent Cloud Anchors sample to target 60fps camera capture frame rate
             // on supported devices.
             // Note, Application.targetFrameRate is ignored when QualitySettings.vSyncCount != 0.
             Application.targetFrameRate = 60;
-            SwitchToHomePage();
+            if(FirebaseManager.user != null)
+            {
+                SwitchToHomePage();
+            }
+            else
+            {
+                SwitchToLoginPage();
+            }
+            
         }
 
         /// <summary>
@@ -376,6 +426,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             PrivacyPrompt.SetActive(false);
             ResolveMenu.SetActive(false);
             PairMenu.SetActive(false);
+            LoginMenu.SetActive(false);
             HomePage.SetActive(false);
         }
 

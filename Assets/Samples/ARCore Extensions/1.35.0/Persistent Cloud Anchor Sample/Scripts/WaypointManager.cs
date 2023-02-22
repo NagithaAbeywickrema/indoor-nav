@@ -12,6 +12,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
 
         public PersistentCloudAnchorsController Controller;
         public GameObject ArrowPrefab;
+        public GameObject DestPrefab;
         public Transform cameraTransform;
         public List<Vertice> vertices = new List<Vertice>();
         public List<Waypoint> waypoints = new List<Waypoint>();
@@ -22,12 +23,17 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         private bool _path_found = false;
         private bool _path_marked = false;
         private List<GameObject> _pointers = new List<GameObject>();
+        private GameObject _destObj;
 
 
         public void OnEnable()
         {
             _path_found = false;
             _path_marked = false;
+            if (_destObj != null)
+            {
+                Destroy(_destObj);
+            }
         }
 
         public void OnDisable()
@@ -41,6 +47,10 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                 Destroy(o);
             }
             _pointers.Clear();
+            if (_destObj != null)
+            {
+                Destroy(_destObj);
+            }
         }
 
         public void Update()
@@ -57,6 +67,10 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                         _current = point;
                         _path_found = false;
                         _path_marked = false;
+                        if (_current.id == destination.id)
+                        {
+                            _destObj = Instantiate(DestPrefab, point.obj.transform);
+                        }
                     }
                 }
             }
@@ -129,7 +143,6 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
 
         public void MakeGraph()
         {
-            //TODO: Load waypoints, vertices from firebase instead
             CloudAnchorHistoryCollection cloud_anchors_history = Controller.LoadCloudAnchorHistory();
             PairHistoryCollection pairs_history = Controller.LoadPairHistory();
 
@@ -146,7 +159,6 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                 this.vertices.Add(vert);
             }
 
-            //TODO: make graph
             foreach (Vertice vertice in vertices)
             {
                 Waypoint point1 = null;
@@ -188,6 +200,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                 if (point.id == anchor_id)
                 {
                     point.obj = anchor_obj;
+                    _path_marked = false;
                 }
             }
         }
